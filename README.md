@@ -10,13 +10,14 @@ An Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/
 
 ## Installation
 
-Python 3.5 or higher is required.
-
 ```bash
 $ git clone https://github.com/b-mueller/scrooge-mcetherface
 $ cd scrooge-mcetherface
 $ pip install -r requirements.txt
+$ cp config.ini.example config.ini
 ```
+
+Don't forget to set up your RPC and sender address in `config.ini`. Python 3.5 or higher is required.
 
 ## Usage
 
