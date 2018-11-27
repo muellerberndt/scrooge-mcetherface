@@ -13,7 +13,7 @@ $ pip install -r requirements.txt
 $ cp config.ini.example config.ini
 ```
 
-Don't forget to set up your RPC and sender address in `config.ini`. Python 3.5 or higher is required.
+Don't forget to set up your RPC URL and wallet address in `config.ini`. Python 3.5 or higher is required.
 
 ## Usage
 
