@@ -1,0 +1,3 @@
+[settings]
+rpc = http://localhost:8545
+sender = [your-ethereum-address]

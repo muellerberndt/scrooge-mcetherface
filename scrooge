@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SCRIPT_DIR=`dirname $0`
+PYTHON="/usr/bin/env python"
+
+$PYTHON $SCRIPT_DIR/scmf.py $1 | $PYTHON $SCRIPT_DIR/epic.py

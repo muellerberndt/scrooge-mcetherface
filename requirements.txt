@@ -1,0 +1,4 @@
+json
+mythril
+configparser
+web3
