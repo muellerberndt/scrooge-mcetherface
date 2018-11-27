@@ -36,7 +36,7 @@ class Vulnerability:
 
 
 def critical(message):
-    logging.error(message)
+    print(message)
     sys.exit()
 
 
@@ -170,7 +170,7 @@ print("Your initial account balance is %.02f ETH.\nCharging lasers..." % eth)
 try:
     vuln = get_vulnerabilities(target_address)[0]
 except InvulnerableError:
-    print("No attack vector found.")
+    critical("No attack vector found.")
 except Exception as e:
     print("Error during analysis: %s" % str(e))
 
