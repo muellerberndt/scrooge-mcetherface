@@ -6,7 +6,7 @@
 
 [![Discord](https://img.shields.io/discord/481002907366588416.svg)](https://discord.gg/E3YrVtG)
 
-An Ethereum auto-looter based on [Mythtil Classic](https://github.com/ConsenSys/mythril-classic/). Use at your own risk.
+An Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/mythril-classic/). Use at your own risk.
 
 ## Installation
 
