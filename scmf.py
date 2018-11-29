@@ -175,7 +175,7 @@ print(
 
 balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
-print("Your initial account balance is %.02f ETH.\nCharging lasers..." % eth)
+print("Your initial account balance is %.02f ETH.\nCharging lasers..." % balance)
 
 # FIXME: Handle multiple issues being returned
 
