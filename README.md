@@ -26,3 +26,8 @@ $ ./scrooge <address>
 <p align="center">
 	<img src="/static/screenshot.png">
 </p>
+
+## Important Notes
+
+- To protect users from themselves, Scrooge will ignore vulnerabilities that require ETH to be sent. Alter the code at your own peril.
+- Act responsibly and use this on testnet only. Don't accidentally kill anyone's contract.
