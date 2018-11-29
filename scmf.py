@@ -192,10 +192,10 @@ commence_attack(sender_address, target_address, vuln)
 
 _balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
-if balance > balance:
+if _balance > balance:
     print(
         "Snagged %d ETH. Your final account balance is %.02f ETH.\n"
-        % (_balance - balance)
+        % (_balance - balance, _balance)
     )
 else:
     print("Attack unsuccessful (no ETH transferred).")
