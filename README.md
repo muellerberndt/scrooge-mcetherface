@@ -2,7 +2,7 @@
 
 [![Discord](https://img.shields.io/discord/481002907366588416.svg)](https://discord.gg/E3YrVtG)
 
-An Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/mythril-classic/). Use at your own risk.
+An Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/mythril-classic/).
 
 ## Installation
 
@@ -29,5 +29,6 @@ $ ./scrooge <address>
 
 ## Important Notes
 
-- To protect users from themselves, Scrooge will ignore vulnerabilities that require ETH to be sent. Alter the code at your own peril.
-- Act responsibly and use this on testnet only. Don't accidentally kill anyone's contract.
+- To protect users from themselves, Scrooge will ignore vulnerabilities that require ETH to be sent.
+- Act responsibly and don't accidentally kill anyone's contract.
+- **Use only on testnet and at your own risk**.
