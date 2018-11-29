@@ -9,6 +9,11 @@ Tested on Ethernaut:
 - [Fallout](https://ethernaut.zeppelin.solutions/level/0x220beee334f1c1f8078352d88bcc4e6165b792f6)
 - [Fallback](https://ethernaut.zeppelin.solutions/level/0x234094aac85628444a82dae0396c680974260be7) (set `symbolic_tx_count` to 3)
 
+
+<p align="center">
+	<img src="/static/screenshot.png">
+</p>
+
 ## Installation
 
 ```bash
@@ -29,10 +34,6 @@ Python 3.5 or higher is required.
 ```
 $ ./scrooge <address>
 ```
-
-<p align="center">
-	<img src="/static/screenshot.png">
-</p>
 
 ## Important Notes
 
