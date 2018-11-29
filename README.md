@@ -13,7 +13,9 @@ $ pip install -r requirements.txt
 $ cp config.ini.example config.ini
 ```
 
-Don't forget to set up your RPC URL and wallet address in `config.ini`. Python 3.5 or higher is required.
+St up your RPC URL and Ethereum address in `config.ini`. Note that you'll need to run a node to send transactions, it won't work over INFURA. You can also try it with [Ganache](https://truffleframework.com/ganache).
+
+Python 3.5 or higher is required.
 
 ## Usage
 
