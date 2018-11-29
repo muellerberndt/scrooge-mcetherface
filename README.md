@@ -29,6 +29,6 @@ $ ./scrooge <address>
 
 ## Important Notes
 
-- To protect users from themselves, Scrooge will ignore vulnerabilities that require ETH to be sent.
+- To protect users from themselves, Scrooge will not send ETH with any transaction. This may cause some attacks to fail.
 - Act responsibly and don't accidentally kill anyone's contract.
 - **Use only on testnet and at your own risk**.
