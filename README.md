@@ -33,5 +33,6 @@ $ ./scrooge <address>
 
 ## Important Notes
 
+- This is a weekend project that hasn't been extensively tested. Don't use it on mainnet.
 - Act responsibly and don't accidentally kill anyone else's contract.
 - **Use only on testnet and at your own risk**.
