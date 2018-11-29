@@ -46,7 +46,7 @@ def w3_request_blocking(sender, receiver, data):
     )
 
     print(
-        "Transaction sent successfully (%s). Waiting for transcation to be mined..."
+        "Transaction sent successfully (%s). Waiting for transaction to be mined..."
         % tx_hash.hex()
     )
     tx_hash = w3.eth.waitForTransactionReceipt(tx_hash, timeout=120)
@@ -56,7 +56,15 @@ def w3_request_blocking(sender, receiver, data):
 
 def get_vulnerabilities(target_address):
     myth = Mythril(enable_online_lookup=False, onchain_storage_access=True)
-    myth.set_api_rpc(rpc[7:])
+
+    if re.match(r"^https", rpc):
+        rpchost = rpc[8:]
+        rpctls = True
+    else:
+        rpchost = rpc[7:]
+        rpctls = False
+
+    myth.set_api_rpc(rpchost, rpctls)
     myth.load_from_address(target_address)
 
     report = myth.fire_lasers(

@@ -1,3 +1,4 @@
 [settings]
 rpc = http://localhost:8545
 sender = [your-ethereum-address]
+symbolic_tx_count = 2
