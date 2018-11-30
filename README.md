@@ -4,10 +4,11 @@
 
 Scrooge McEtherface is an Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/mythril-classic/). It exploits instances of [Ether theft](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-105) and [selfdestruct](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-106) caused by various issues including [integer arithmetic bugs](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-101), [exposed initialization functions](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-118) and others. Use at your own peril.
 
-Tested on Ethernaut:
+Tested on Ethernaut [Fallout](https://ethernaut.zeppelin.solutions/level/0x220beee334f1c1f8078352d88bcc4e6165b792f6) and [Fallback](https://ethernaut.zeppelin.solutions/level/0x234094aac85628444a82dae0396c680974260be7) (for Fallback set `symbolic_tx_count` to 3).
 
-- [Fallout](https://ethernaut.zeppelin.solutions/level/0x220beee334f1c1f8078352d88bcc4e6165b792f6)
-- [Fallback](https://ethernaut.zeppelin.solutions/level/0x234094aac85628444a82dae0396c680974260be7) (set `symbolic_tx_count` to 3)
+<p align="center">
+	<img src="/static/screenshot.png">
+</p>
 
 ## Installation
 
@@ -30,11 +31,8 @@ Python 3.5 or higher is required.
 $ ./scrooge <address>
 ```
 
-<p align="center">
-	<img src="/static/screenshot.png">
-</p>
-
 ## Important Notes
 
+- This is a weekend project that hasn't been extensively tested. Don't use it on mainnet.
 - Act responsibly and don't accidentally kill anyone else's contract.
 - **Use only on testnet and at your own risk**.
