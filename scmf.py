@@ -185,7 +185,7 @@ try:
 except InvulnerableError:
     critical("No attack vector found.")
 except Exception as e:
-    print("Error during analysis: %s" % str(e))
+    critical("Error during analysis: %s" % str(e))
 
 target_balance = w3.eth.getBalance(target_address)
 
