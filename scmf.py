@@ -136,7 +136,6 @@ def commence_attack(sender_address, target_address, vuln):
         else:
             sys.exit()
 
-
 # Main
 
 config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
@@ -188,7 +187,6 @@ except Exception as e:
     critical("Error during analysis: %s" % str(e))
 
 target_balance = w3.eth.getBalance(target_address)
-
 commence_attack(sender_address, target_address, vuln)
 
 _balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
