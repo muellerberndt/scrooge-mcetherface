@@ -195,7 +195,7 @@ _balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
 if _balance > balance:
     print(
-        "Snagged %d ETH. Your final account balance is %.05f ETH.\n"
+        "Snagged %.05f ETH. Your final account balance is %.05f ETH.\n"
         % (_balance - balance, _balance)
     )
 else:
