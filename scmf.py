@@ -41,7 +41,6 @@ def w3_request_blocking(sender, receiver, value, data):
     tx_hash = w3.eth.sendTransaction(
         {"to": receiver, "from": sender, "data": data, "value": value, "gas": 5000000}
     )
-
     print(
         "Transaction sent successfully, tx-hash: %s. Waiting for transaction to be mined..."
         % tx_hash.hex()
@@ -114,17 +113,18 @@ def commence_attack(sender_address, target_address, vuln):
         )
         value = int(tx["call_value"], 16)
 
+        print(
+            "You are about to send the following transaction:\nFrom: %s, To: %s, Value: %d\nData: %s"
+            % (sender_address, target_address, value, str(tx["calldata"]))
+        )
+
         if value > w3.fromWei(value, 'ether') > 0.99:
             critical(
                 "Not proceeding with attack as it requires sending a lot of ETH. Too risky."
             )
         elif value > 0:
-            print("WARNING: You;ll be transferring %.05f ETH wth this transaction" % w3.fromWei(value, 'ether'))
+            print("WARNING: You'll be transferring %.05f ETH wth this transaction" % w3.fromWei(value, 'ether'))
 
-        print(
-            "You are about to send the following transaction:\nFrom: %s, To: %s, Value: %d\nData: %s"
-            % (sender_address, target_address, value, str(tx["calldata"]))
-        )
         response = input("Are you sure you want to proceed (y/N)?\n")
 
         if response == "y":
