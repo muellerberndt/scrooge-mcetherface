@@ -17,11 +17,9 @@ $ pip install -r requirements.txt
 $ cp config.ini.example config.ini
 ```
 
-Set up your RPC URL and Ethereum address in `config.ini`. Note that you'll need to run a node to send transactions, it won't work over INFURA. The easiest way to test is using [Ganache](https://truffleframework.com/ganache).
+Python 3.5 or higher is required. Set up your RPC URL and Ethereum address in `config.ini`. Note that you'll need to run a node to send transactions, it won't work over INFURA. The easiest way to test is using [Ganache](https://truffleframework.com/ganache).
 
 The `symbolic_tx_count` parameter sets a bound on the number of transactions being explored. See also this [Medium article](https://medium.com/@muellerberndt/automating-smart-contract-exploitation-and-looting-d43e9740b41c).
-
-Python 3.5 or higher is required.
 
 ## Usage
 
