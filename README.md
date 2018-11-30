@@ -21,7 +21,7 @@ $ cp config.ini.example config.ini
 
 Set up your RPC URL and Ethereum address in `config.ini`. Note that you'll need to run a node to send transactions, it won't work over INFURA. The easiest way to test is using [Ganache](https://truffleframework.com/ganache).
 
-Use the ``symbolic_tx_count` parameter to set a bound on the number of transcations being explored (explained in [this article](https://hackernoon.com/practical-smart-contract-security-analysis-and-exploitation-part-1-6c2f2320b0c).
+The `symbolic_tx_count` parameter sets a bound on the number of transactions being explored. See also this [Medium article](https://medium.com/@muellerberndt/automating-smart-contract-exploitation-and-looting-d43e9740b41c).
 
 Python 3.5 or higher is required.
 
