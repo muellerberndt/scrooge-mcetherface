@@ -13,29 +13,23 @@ from enum import Enum
 # import logging
 # logging.basicConfig(level=logging.INFO)
 
-
 class InvulnerableError(Exception):
     pass
-
 
 class VulnType(Enum):
     KILL_ONLY = 0
     KILL_AND_WITHDRAW = 1
     ETHER_THEFT = 2
 
-
 class Vulnerability:
     def __init__(self, type, description, transactions):
-
         self.type = type
         self.description = description
         self.transactions = transactions
 
-
 def critical(message):
     print(message)
     sys.exit()
-
 
 def w3_request_blocking(sender, receiver, value, data):
     tx_hash = w3.eth.sendTransaction(
@@ -48,7 +42,6 @@ def w3_request_blocking(sender, receiver, value, data):
     tx_hash = w3.eth.waitForTransactionReceipt(tx_hash, timeout=120)
 
     return tx_hash
-
 
 def get_vulns(target_address, tx_count):
     myth = Mythril(enable_online_lookup=False, onchain_storage_access=True)
@@ -102,7 +95,6 @@ def get_vulns(target_address, tx_count):
         return vulns
 
     raise InvulnerableError
-
 
 def commence_attack(sender_address, target_address, vuln):
     print(vuln.description)
