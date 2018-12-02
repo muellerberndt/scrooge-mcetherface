@@ -118,7 +118,7 @@ def commence_attack(sender_address, target_address, vuln):
             % (sender_address, target_address, value, str(tx["calldata"]))
         )
 
-        if value > w3.fromWei(value, 'ether') > 0.99:
+        if w3.fromWei(value, 'ether') > 0.99:
             critical(
                 "Not proceeding with attack as it requires sending a lot of ETH. Too risky."
             )
