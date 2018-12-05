@@ -27,6 +27,10 @@ The `symbolic_tx_count` parameter sets a bound on the number of transactions bei
 $ ./scrooge <address>
 ```
 
+## Support
+
+No support for this tool exists whatsoever.
+
 ## Important Notes
 
 - This is a weekend project that hasn't been extensively tested. Don't use it on mainnet.
