@@ -29,7 +29,7 @@ $ ./scrooge <address>
 
 ## Support
 
-No support for this tool exists whatsoever.
+**No support for this tool exists whatsoever.**
 
 ## Important Notes
 
