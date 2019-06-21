@@ -2,7 +2,7 @@
 
 [![Discord](https://img.shields.io/discord/481002907366588416.svg)](https://discord.gg/E3YrVtG)
 
-Scrooge McEtherface is an Ethereum auto-looter based on [Mythril Classic](https://github.com/ConsenSys/mythril-classic/). It exploits instances of [Ether theft](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-105) and [selfdestruct](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-106) caused by various issues including [integer arithmetic bugs](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-101), [exposed initialization functions](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-118) and others. Use at your own peril.
+Scrooge McEtherface is an Ethereum auto-looter based on [Mythril](https://github.com/ConsenSys/mythril/). It exploits instances of [Ether theft](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-105) and [selfdestruct](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-106) caused by various issues including [integer arithmetic bugs](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-101), [exposed initialization functions](https://smartcontractsecurity.github.io/SWC-registry/docs/SWC-118) and others. Use at your own peril.
 
 <p align="center">
 	<img src="/static/screenshot.png">
