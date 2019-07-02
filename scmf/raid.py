@@ -77,7 +77,10 @@ class Raid:
 
     def __repr__(self):
         return '{}(target={},type="{}",steps={})'.format(
-            self.__class__.__name__, self.target, self.issue["title"], self.steps
+            self.__class__.__name__,
+            self.target,
+            self.issue.description_head,
+            self.steps,
         )
 
     def pretty_print(self) -> str:

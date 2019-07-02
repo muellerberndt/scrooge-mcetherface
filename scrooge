@@ -5,7 +5,6 @@ import re
 import sys
 import code
 import logging
-from typing import List
 from scmf.raid import Raid
 from scmf.helper import W3
 from web3 import HTTPProvider
@@ -16,12 +15,14 @@ from mythril.mythril import (
     MythrilConfig,
 )
 
+
 log = logging.getLogger(__name__)
 
 
 def critical(message: str) -> None:
     print(message)
     sys.exit()
+
 
 config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
 
@@ -93,7 +94,7 @@ report = analyzer.fire_lasers(
 )
 
 
-raids = []  # Type: List[Raid]
+raids = []
 w3 = W3(HTTPProvider(rpc))
 
 c = 0
@@ -103,10 +104,13 @@ for issue_key in report.issues:
 
 print("Found {} attacks:\n".format(len(raids)))
 
-for i in range(0, len(raids)):
-    print("ATTACK {}: {}\n".format(i, raids[i].pretty_print()))
 
+def list_raids():
+    for i in range(0, len(raids)):
+        print("ATTACK {}: {}\n".format(i, raids[i].pretty_print()))
+
+
+list_raids()
+
+sys.ps1 = ""
 code.interact(local=locals())
-
-
-
