@@ -1,6 +1,112 @@
-#!/bin/sh
+#!/usr/bin/env python
 
-SCRIPT_DIR=`dirname $0`
-PYTHON="/usr/bin/env python"
+import os
+import re
+import sys
+import code
+import logging
+from typing import List
+from scmf.raid import Raid
+from scmf.helper import W3
+from web3 import HTTPProvider
+from configparser import ConfigParser
+from mythril.mythril import (
+    MythrilAnalyzer,
+    MythrilDisassembler,
+    MythrilConfig,
+)
 
-$PYTHON -u $SCRIPT_DIR/scmf.py $1 | $PYTHON $SCRIPT_DIR/epic.py
+log = logging.getLogger(__name__)
+
+
+def critical(message: str) -> None:
+    print(message)
+    sys.exit()
+
+config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
+
+try:
+    config = ConfigParser()
+    config.optionxform = str
+    config.read(config_path, "utf-8")
+
+    sender_address = W3.toChecksumAddress(config["settings"]["sender"])
+    rpc = config["settings"]["rpc"]
+except KeyError:
+    critical("Missing or invalid configuration file. See config.ini.example.")
+except ValueError as e:
+    critical("Invalid Ethereum address: " + config["settings"]["sender"])
+
+try:
+    tx_count = int(config["settings"]["symbolic_tx_count"])
+except [KeyError, TypeError]:
+    tx_count = 2
+
+try:
+    target_address = W3.toChecksumAddress(sys.argv[1])
+except IndexError:
+    critical("Usage: scrooge <target_address>")
+except ValueError as e:
+    critical("Invalid Ethereum address: " + sys.argv[1])
+
+conf = MythrilConfig()
+
+log.info("Target address: "+ str(target_address))
+
+if re.match(r"^https", rpc):
+    rpchost = rpc[8:]
+    rpctls = True
+else:
+    rpchost = rpc[7:]
+    rpctls = False
+
+conf.set_api_rpc(rpchost, rpctls)
+# Commence attack
+
+disassembler = MythrilDisassembler(
+    eth=conf.eth,
+    enable_online_lookup=False
+)
+
+disassembler.load_from_address(target_address)
+
+analyzer = MythrilAnalyzer(
+    strategy="bfs",
+    disassembler=disassembler,
+    address=target_address,
+    execution_timeout=120,
+    max_depth=32,
+    loop_bound=3,
+    disable_dependency_pruning=False,
+    onchain_storage_access=True
+)
+
+print(
+    "Scrooge McEtherface at your service.\nAnalyzing %s over %d transactions."
+    % (target_address, tx_count)
+)
+
+
+report = analyzer.fire_lasers(
+    modules=["ether_thief", "suicide"],
+    transaction_count=tx_count,
+)
+
+
+raids = []  # Type: List[Raid]
+w3 = W3(HTTPProvider(rpc))
+
+c = 0
+
+for issue_key in report.issues:
+    raids.append(Raid(sender_address, target_address, report.issues[issue_key], w3))
+
+print("Found {} attacks:\n".format(len(raids)))
+
+for i in range(0, len(raids)):
+    print("ATTACK {}: {}\n".format(i, raids[i].pretty_print()))
+
+code.interact(local=locals())
+
+
+

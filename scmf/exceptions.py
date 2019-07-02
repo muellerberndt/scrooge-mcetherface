@@ -1,0 +1,2 @@
+class InvulnerableError(Exception):
+    pass
