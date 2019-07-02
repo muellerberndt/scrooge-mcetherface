@@ -25,7 +25,7 @@ Start a session by running:
 $ ./scrooge <address>
 ```
 
-This will analyze the smart contract at the target address, output any vulnerabilites found and spawn a Python shell:
+This will analyze the smart contract at the target address, output the vulnerabilites found and spawn a Python shell:
 
 ```
 $ ./scrooge 0x3b1d02336205d1f22961c0f462abfe083e515921
