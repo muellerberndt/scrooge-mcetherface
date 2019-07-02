@@ -2,3 +2,4 @@
 mythril
 config.ini
 .idea
+*.pyc
