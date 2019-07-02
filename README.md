@@ -46,7 +46,7 @@ Python 3.6.3 (default, Jan  8 2018, 08:49:07)
 >>> 
 ```
 
-You now have access to a list of [Raid](https://github.com/b-mueller/scrooge-mcetherface/blob/5584c54d6a6da1a08a162b51569b47dbb525c5d1/scmf/raid.py#L62) objects each of which represents a sequence of transaction that exploits a bug.
+You now have access to a list of [Raid](https://github.com/b-mueller/scrooge-mcetherface/blob/5584c54d6a6da1a08a162b51569b47dbb525c5d1/scmf/raid.py#L62) objects, each of which represents a sequence of transactions that exploit a bug.
 
 ```
 >>> r = raids[0]
