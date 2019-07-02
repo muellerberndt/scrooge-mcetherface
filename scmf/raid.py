@@ -53,7 +53,7 @@ class Step:
             self.__class__.__name__, self.func_hash(), self.func_args(), self.call_value
         )
 
-    def pretty_print(self) -> str:
+    def pretty(self) -> str:
         return "Call data: {} {}, call value: {}".format(
             self.func_hash(), self.func_args(), self.call_value
         )
@@ -83,11 +83,11 @@ class Raid:
             self.steps,
         )
 
-    def pretty_print(self) -> str:
+    def pretty(self) -> str:
         formatted = "{}".format(self.issue.description_head)
 
         for i in range(0, len(self.steps)):
-            formatted += "\n  {}: {}".format(i, self.steps[i].pretty_print())
+            formatted += "\n  {}: {}".format(i, self.steps[i].pretty())
 
         return formatted
 

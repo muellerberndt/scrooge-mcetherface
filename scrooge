@@ -62,7 +62,6 @@ else:
     rpctls = False
 
 conf.set_api_rpc(rpchost, rpctls)
-# Commence attack
 
 disassembler = MythrilDisassembler(
     eth=conf.eth,
@@ -93,11 +92,11 @@ report = analyzer.fire_lasers(
     transaction_count=tx_count,
 )
 
-
 raids = []
 w3 = W3(HTTPProvider(rpc))
 
-c = 0
+if len(report.issues) == 0:
+    critical("No vulnerabilities found.")
 
 for issue_key in report.issues:
     raids.append(Raid(sender_address, target_address, report.issues[issue_key], w3))
@@ -107,10 +106,9 @@ print("Found {} attacks:\n".format(len(raids)))
 
 def list_raids():
     for i in range(0, len(raids)):
-        print("ATTACK {}: {}\n".format(i, raids[i].pretty_print()))
+        print("ATTACK {}: {}\n".format(i, raids[i].pretty()))
 
 
 list_raids()
 
-sys.ps1 = ""
 code.interact(local=locals())
