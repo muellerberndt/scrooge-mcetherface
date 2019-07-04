@@ -13,6 +13,7 @@ from mythril.mythril import (
     MythrilDisassembler,
     MythrilConfig,
 )
+from mythril.exceptions import CriticalError
 
 
 def critical(message: str) -> None:
@@ -57,23 +58,26 @@ else:
 
 conf.set_api_rpc(rpchost, rpctls)
 
-disassembler = MythrilDisassembler(
-    eth=conf.eth,
-    enable_online_lookup=False
-)
+try:
+    disassembler = MythrilDisassembler(
+        eth=conf.eth,
+        enable_online_lookup=False
+    )
 
-disassembler.load_from_address(target_address)
+    disassembler.load_from_address(target_address)
 
-analyzer = MythrilAnalyzer(
-    strategy="bfs",
-    disassembler=disassembler,
-    address=target_address,
-    execution_timeout=120,
-    max_depth=32,
-    loop_bound=3,
-    disable_dependency_pruning=False,
-    onchain_storage_access=True
-)
+    analyzer = MythrilAnalyzer(
+        strategy="bfs",
+        disassembler=disassembler,
+        address=target_address,
+        execution_timeout=120,
+        max_depth=32,
+        loop_bound=3,
+        disable_dependency_pruning=False,
+        onchain_storage_access=True
+    )
+except CriticalError as e:
+    critical(str(e))
 
 print(
     "Scrooge McEtherface at your service.\nAnalyzing %s over %d transactions."
