@@ -3,3 +3,4 @@ mythril
 config.ini
 .idea
 *.pyc
+__pycache__
