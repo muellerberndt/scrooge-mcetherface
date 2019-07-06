@@ -110,7 +110,7 @@ report = analyzer.fire_lasers(
 )
 
 raids = []
-w3 = W3(HTTPProvider(rpc), gas_price = gas_price)
+w3 = W3(HTTPProvider(rpc), gas_price=gas_price)
 
 if len(report.issues) == 0:
     critical("No vulnerabilities found.")
