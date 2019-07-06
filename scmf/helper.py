@@ -1,8 +1,22 @@
 from web3 import Web3
+from web3.utils.empty import empty
 
 
 class W3(Web3):
     """Helper class that extends Web3 with convenience methods"""
+
+    def __init__(
+        self,
+        providers=empty,
+        middlewares=None,
+        modules=None,
+        ens=empty,
+        gas_price=1000000000,
+    ):
+        super().__init__(
+            providers=providers, middlewares=middlewares, modules=modules, ens=ens
+        )
+        self.gas_price = gas_price
 
     def request_blocking(
         self, sender: str, receiver: str, value: int, data: str
@@ -23,6 +37,7 @@ class W3(Web3):
                 "data": data,
                 "value": value,
                 "gas": 5000000,
+                "gasPrice": self.gas_price,
             }
         )
         print(

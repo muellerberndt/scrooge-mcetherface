@@ -23,29 +23,49 @@ def critical(message: str) -> None:
 
 config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
 
+# Parse all the config options
+
 try:
     config = ConfigParser()
     config.optionxform = str
     config.read(config_path, "utf-8")
+    settings = config["settings"]
+except KeyError:
+    critical("Missing or invalid configuration file. See config.ini.example.")
 
+try:
     sender_address = W3.toChecksumAddress(config["settings"]["sender"])
     rpc = config["settings"]["rpc"]
 except KeyError:
-    critical("Missing or invalid configuration file. See config.ini.example.")
+    critical("No sender address set in config.")
 except ValueError as e:
-    critical("Invalid Ethereum address: " + config["settings"]["sender"])
+    critical("Invalid sender address: " + config["settings"]["sender"])
 
 try:
-    tx_count = int(config["settings"]["symbolic_tx_count"])
-except [KeyError, TypeError]:
-    tx_count = 2
+    if "gasprice" in settings:
+        gas_price = int(settings["gasprice"])
+    else:
+        gas_price = 1000000000  # 1 Gwei
+
+    if "symbolic_tx_count" in settings:
+        tx_count = int(settings["symbolic_tx_count"])
+    else:
+        tx_count = 2
+
+    if "timeout" in settings:
+        timeout = int(settings["timeout"])
+    else:
+        timeout = 120  # 120 seconds
+except ValueError as e:
+    critical("Invalid configuation: {}".format(e))
 
 try:
     target_address = W3.toChecksumAddress(sys.argv[1])
 except IndexError:
     critical("Usage: scrooge <target_address>")
 except ValueError as e:
-    critical("Invalid Ethereum address: " + sys.argv[1])
+    critical("Invalid target address: " + sys.argv[1])
+
 
 conf = MythrilConfig()
 
@@ -70,7 +90,7 @@ try:
         strategy="bfs",
         disassembler=disassembler,
         address=target_address,
-        execution_timeout=120,
+        execution_timeout=timeout,
         max_depth=32,
         loop_bound=3,
         disable_dependency_pruning=False,
@@ -90,7 +110,7 @@ report = analyzer.fire_lasers(
 )
 
 raids = []
-w3 = W3(HTTPProvider(rpc))
+w3 = W3(HTTPProvider(rpc), gas_price = gas_price)
 
 if len(report.issues) == 0:
     critical("No vulnerabilities found.")

@@ -2,3 +2,5 @@
 rpc = http://localhost:7545
 sender = [your-ethereum-address]
 symbolic_tx_count = 3
+timeout = 120
+gasprice = 1000000000
