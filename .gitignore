@@ -4,3 +4,4 @@ config.ini
 .idea
 *.pyc
 __pycache__
+/venv
